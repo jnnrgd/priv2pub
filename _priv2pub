@@ -1,0 +1,32 @@
+#compdef priv2pub k1pub r1pub p384pub p521pub edpub ed448pub
+
+_priv2pub() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  local -a curves
+  curves=(
+    'secp256k1:Bitcoin / Ethereum (256-bit scalar, default)'
+    'p256:NIST P-256 / secp256r1 (256-bit scalar)'
+    'p384:NIST P-384 / secp384r1 (384-bit / 48-byte scalar)'
+    'p521:NIST P-521 / secp521r1 (521-bit / 66-byte scalar)'
+    'ed25519:Edwards25519 (256-bit / 32-byte seed)'
+    'ed448:Edwards448 (448-bit / 57-byte seed)'
+  )
+
+  _arguments -C -s \
+    '(-c --compressed -u --uncompressed)'{-c,--compressed}'[Output compressed public key]' \
+    '(-c --compressed -u --uncompressed)'{-u,--uncompressed}'[Output uncompressed public key]' \
+    '(-h --help)'{-h,--help}'[Show usage information]' \
+    '*: :->args' && return 0
+
+  case "$state" in
+    args)
+      _alternative \
+        'curves:supported curves:_describe -t curves "curve" curves' \
+        'files:key file:_files'
+      ;;
+  esac
+}
+
+_priv2pub "$@"
